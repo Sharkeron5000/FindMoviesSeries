@@ -1,0 +1,76 @@
+.body{
+    overflow-y: hidden;
+}
+.container{
+    max-width: 100%;
+    padding: 0;
+    overflow-y: hidden;
+}
+.jumbotron {
+    padding: 2rem;
+}
+
+#movies {
+    margin: 0;
+}
+
+img{
+    max-width: 100%;
+    max-height: 500px;
+}
+.img_poster{
+    height: 360px;
+}
+
+.item {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.navbar-arrow {
+    font-size: 30px;
+    font-weight: bold;
+    display: inline-block;
+    background-color: green;
+    border-radius: 10%;
+    transition: all 0.3s;
+    width: 80px;
+    height: 40px;
+    line-height: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.bgImage {
+    background-position: right top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 0;
+    margin: 0;
+    max-height: 500px;
+}
+.bgGrad{
+    background-image: linear-gradient(to right, rgba(12.16%, 11.76%, 10.20%, 1.00) 150px, rgba(12.16%, 11.76%, 10.20%, 0.84) 100%);
+    background-size: cover;
+    background-position: right -200px top;
+    padding: 0;
+    margin: 0;
+    max-height: 500px;
+}
+
+.spinner {
+    margin: 0 auto;
+    width:  100px;
+    height: 100px;
+    border: 10px solid;
+    border-radius: 50%;
+    border-left-color: transparent;
+    border-top-color: #aaaaaa;
+    border-right-color: #555;
+    border-bottom-color: #000;
+    animation: spin 500ms infinite linear;
+}
+@keyframes spin{
+    100%{
+        transform: rotate(360deg)}
+}

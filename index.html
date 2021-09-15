@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AVP-Kinopoisk</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <button class="navbar-arrow btn btn-info d-none" id="navbar-arrow">←</button>
+            <a href="index.html" class="navbar-brand">AVP-Kinopoisk</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="jumbotron">
+            <h3 class="text-center">Поиск фильмов и сериалов</h3>
+            <input type="text" class="form-control" id='searchText' placeholder="Введите название...">
+            <!-- <form id='search-form' action="">
+                <input type="text" class="form-control" id='searchText' placeholder="Введите название...">
+            </form> -->
+        </div>
+    </div>
+    <div class="container">
+        <div id='movies' class="row"></div>
+    </div>
+
+    <script type="module" src="./script.js"></script>
+</body>
+
+</html>
