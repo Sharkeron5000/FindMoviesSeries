@@ -1,4 +1,4 @@
-import { apiSearch } from "./functions.js";
+import { apiSearch } from "../script.js";
 
 let oldDate;
 

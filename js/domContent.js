@@ -5,10 +5,11 @@ function videoContent(item, nameItem, dataInfo) {
   const poster = item.poster_path ? urlPoster500 + item.poster_path : './img/noposter.png';
   return `
   <div class='col-12 col-md-6 col-xl-3 item'>
-  <img src="${poster}" class="img_poster" alt="${nameItem}" ${dataInfo}>
-  <h5>${nameItem}</h5>  
+  <img src="${poster}" class="imgPosterMin" alt="${nameItem}" ${dataInfo}>
+  <p class="vote text-light">${item.vote_average}⭐</p>
+  <h5 class="border titleName col">${nameItem}</h5>  
   </div>
-`;
+  `;
 }
 
 function errorContent(reason, movie) {
@@ -21,10 +22,7 @@ function fullVideoContent(output, showType) {
   return `
   <div class="row col-12" id="bgImage">
     <div class="row col-12 container" id="bgGrad">
-      <div class="col-2">
-      <img src="${poster}" alt="${output.name || output.title}">
-      
-      </div>
+      <img class="imgPosterFull col-2" src="${poster}" alt="${output.name || output.title}">
       <div class="col-8 text-light">
         <h4 class="col-12 text-center text-light">${output.name || output.title} ${(output.name || output.title) !== (output.original_name || output.original_title)
         ? `(${output.original_name || output.original_title})` : ''}</h4>
@@ -52,13 +50,10 @@ function fullVideoContent(output, showType) {
 
 /** Вывод фонового изображения */
 function backgroundImage(image) {
-  const poster = image ? urlPosterOriginal + image : './img/noPoster.png'
+  const poster = image ? urlPosterOriginal + image : './img/noPoster.png';
   const bgImage = document.getElementById("bgImage");
   const bgGrad = document.getElementById("bgGrad");
 
-  // bgImage.style.cssText = `
-  //   background-image: url(${poster});
-  // `;
   bgImage.style.backgroundImage = `url(${poster})`;
   bgImage.classList.add('bgImage');
   bgGrad.classList.add('bgGrad');

@@ -14,17 +14,32 @@
     margin: 0;
 }
 
-img{
-    max-width: 100%;
-    max-height: 500px;
+.imgPosterFull{
+    display: block;
+    max-height: 80%;
+    align-self: center;
+    border-radius: 15%;
 }
-.img_poster{
+.imgPosterMin{
     height: 360px;
+    max-width: 240px;
 }
 
 .item {
-    margin: 15px 0;
+    height: 400px;
+    margin: 25px 0;
     text-align: center;
+}
+.titleName {
+    max-width: 242px;
+    margin: auto
+}
+.vote {
+    position: absolute;
+    width: 100%;
+    bottom: 30px;
+    right: 90px;
+    z-index: 1;
 }
 
 .navbar-arrow {
@@ -50,9 +65,8 @@ img{
     max-height: 500px;
 }
 .bgGrad{
-    background-image: linear-gradient(to right, rgba(12.16%, 11.76%, 10.20%, 1.00) 150px, rgba(12.16%, 11.76%, 10.20%, 0.84) 100%);
+    background-image: linear-gradient(to right, rgb(14, 14, 13) 150px, rgba(20, 20, 19, 0.863) 100%);
     background-size: cover;
-    background-position: right -200px top;
     padding: 0;
     margin: 0;
     max-height: 500px;
