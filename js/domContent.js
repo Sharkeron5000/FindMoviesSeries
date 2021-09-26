@@ -1,13 +1,34 @@
 const urlPoster500 = 'https://image.tmdb.org/t/p/w500';
 const urlPosterOriginal = 'https://image.tmdb.org/t/p/original';
+const filterContainer = document.getElementById('filter');
+
+function changeTopContent() {
+  const valueTopShow = JSON.parse(localStorage.getItem('topWatch')) || "day";
+  return `<div class="col-12 row justify-content-center">
+    <h4 class="text-center text-info col-12">Популярное за:</h4> 
+    <h4 class="text-right text-info col-5 h4__text-correct">день</h4> 
+    <div class="col-auto">
+      <div class="container-toggle">
+        <input type="checkbox" class="toggle__check" id="checkboxTopChange" ${valueTopShow === "week" ? 'checked' : ''}>
+        <div class="toggle__switch"></div>
+        <div class="toggle__track"></div>
+      </div>
+    </div>
+    <h4 class="text-left text-info col-5 h4__text-correct">неделю</h4> 
+  </div>`;
+}
 
 function videoContent(item, nameItem, dataInfo) {
   const poster = item.poster_path ? urlPoster500 + item.poster_path : './img/noposter.png';
   return `
-  <div class='col-12 col-md-6 col-xl-3 item'>
-  <img src="${poster}" class="imgPosterMin" alt="${nameItem}" ${dataInfo}>
-  <p class="vote text-light">${item.vote_average}⭐</p>
-  <h5 class="border titleName col">${nameItem}</h5>  
+  <div class='col-12 col-md-6 col-xl-3 movie'>
+    <a href=#${dataInfo}>
+      <img src="${poster}" class="movies__poster-min" alt="${nameItem}" ${dataInfo}>
+      <div class="movie__vote">
+        <p class="text-light vote__text">${item.vote_average}⭐</p>
+      </div>
+      <h5 class="border movies__title-name col">${nameItem}</h5>
+    </a>
   </div>
   `;
 }
@@ -18,11 +39,12 @@ function errorContent(reason, movie) {
 }
 
 function fullVideoContent(output, showType) {
+  filterContainer.classList.add("d-none")
   const poster = output.poster_path ? urlPoster500 + output.poster_path : './img/noPoster.png';
   return `
   <div class="row col-12" id="bgImage">
     <div class="row col-12 container" id="bgGrad">
-      <img class="imgPosterFull col-2" src="${poster}" alt="${output.name || output.title}">
+      <img class="movies__poster-full col-2" src="${poster}" alt="${output.name || output.title}">
       <div class="col-8 text-light">
         <h4 class="col-12 text-center text-light">${output.name || output.title} ${(output.name || output.title) !== (output.original_name || output.original_title)
         ? `(${output.original_name || output.original_title})` : ''}</h4>
@@ -55,8 +77,8 @@ function backgroundImage(image) {
   const bgGrad = document.getElementById("bgGrad");
 
   bgImage.style.backgroundImage = `url(${poster})`;
-  bgImage.classList.add('bgImage');
-  bgGrad.classList.add('bgGrad');
+  bgImage.classList.add('movies__bg-image');
+  bgGrad.classList.add('movies__bg-gradient');
 }
 
 /** Вывод статуса фильма на русском языке */
@@ -108,6 +130,7 @@ function showGenres(genresList) {
 }
 
 export const content = {
+  changeTopContent,
   videoContent,
   errorContent,
   fullVideoContent,

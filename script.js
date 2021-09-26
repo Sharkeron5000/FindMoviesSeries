@@ -1,37 +1,43 @@
 import { content } from "./js/domContent.js";
-import { addEventMedia } from "./js/functions.js";
+import { addEventMedia} from "./js/events.js";
+import { getControlPanelInput } from "./js/functions.js";
 import { timeStartSearch } from "./js/timeout.js";
 import { key } from "./key/apiKey.js";
 
 const searchForm = document.getElementById('searchText');
 const movie = document.getElementById('movies');
+const checkTopWeekDay = document.getElementById('checkTopWeekDay');
 const apiKey = key;
 
+/** Запустить поиск фильма по введенным данным */
 searchForm.addEventListener('input', timeStartSearch);
 
 /** Загрузка списка популярных фильмов, когда страница загрузилась полностью */
-document.addEventListener('DOMContentLoaded', () => {
-    fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}&language=ru`)
+document.addEventListener('DOMContentLoaded', getControlPanelInput);
+
+/** Загрузка списка популярных фильмов за неделю */
+export function showTopFilms() {
+    let inner = '';
+    const getValueTop = JSON.parse(localStorage.getItem('topWatch'));
+    // console.log(typeof getValueTop);
+
+    fetch(`https://api.themoviedb.org/3/trending/all/${getValueTop}?api_key=${apiKey}&language=ru`)
         .then((value) => {
-            // console.log(value);
             if (value.status !== 200) {
                 throw new Error(value.status);
             }
             return value.json();
         })
         .then((output) => {
-            console.log(output);
-            let inner = '<h4 class="col-12 text-center text-info">Популярное за неделю</h4>';
-
             if (output.results.length === 0) {
                 movie.innerHTML = '<h2 class="col-12 text-center text-info">Ничего не найдено</h2>';
                 return;
             }
 
             output.results.forEach((item) => {
+                console.log(item);
                 const nameItem = item.name || item.title;
-                let mediaType = item.title ? 'movie' : 'tv';
-                let dataInfo = `data-id="${String(item.id).trim()}" data-type="${mediaType}"`;
+                let dataInfo = `data-id="${String(item.id).trim()}" data-type="${item.media_type}"`;
 
                 inner += content.videoContent(item, nameItem, dataInfo);
             });
@@ -43,10 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch((reason) => {
             content.errorContent(reason, movie);
         });
-});
+}
 
 /** Показ список фильмов, через поисковик */
 export function apiSearch() {
+    const movieSearch = document.getElementById('movieSearch').checked;
+    const tvSearch = document.getElementById('tvSearch').checked;
+    const peopleSearch = document.getElementById('peopleSearch').checked;
+    let searchCheckList = [movieSearch, tvSearch, peopleSearch];
 
     const SearchText = document.querySelector('.form-control').value;
     const server = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=ru&query=${SearchText}`;
@@ -54,19 +64,18 @@ export function apiSearch() {
 
     if (SearchText.trim().length === 0) {
         movie.innerHTML = '<h2 class="col-12 text-center text-danger">Поле поиска не должно быть пустым</h2>';
+        showTopFilms()
         return;
     }
 
     fetch(server)
         .then((value) => {
-            // console.log(value);
             if (value.status !== 200) {
                 return Promise.reject(new Error(value.status));
             }
             return value.json();
         })
         .then((output) => {
-            // console.log(output.results);
             let inner = '';
 
             if (output.results.length === 0) {
@@ -75,7 +84,6 @@ export function apiSearch() {
             }
 
             output.results.forEach((item) => {
-                // console.log(item);
                 const nameItem = item.name || item.title;
                 let dataInfo = '';
 
@@ -96,6 +104,7 @@ export function apiSearch() {
 
 /** Вывод полной информации о фильме */
 export function showFullInfo() {
+    movie.innerHTML = '<div class="spinner"></div>';
     let url = '';
     let showType = '';
     if (this.dataset.type === 'movie') {
@@ -145,7 +154,6 @@ function getVideo(type, id) {
             return value.json();
         })
         .then((output) => {
-            // console.log(output);
             let videoFrame = output.results.length === 1 ? '<h5 class="text-info">Трейлер</h5>' : '<h5 class="text-info">Трейлеры</h5>';
 
             if (output.results.length === 0) {

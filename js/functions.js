@@ -1,12 +1,13 @@
-import { showFullInfo } from "../script.js";
+import { showTopFilms } from "../script.js";
+import { content } from "./domContent.js";
+import { changeTopDayWeek } from "./events.js";
 
-const movie = document.getElementById('movies');
+const checkTopWeekDay = document.getElementById('checkTopWeekDay');
 
-/** Добавление эвента на полный показ всем показанным фильмам на странице */
-export function addEventMedia() {
-  const media = movie.querySelectorAll('.item>img[data-id]');
-  media.forEach((elem) => {
-      elem.style.cursor = 'pointer';
-      elem.addEventListener('click', showFullInfo);
-  });
-};
+export function getControlPanelInput() {
+  checkTopWeekDay.innerHTML = content.changeTopContent();
+  const checkboxTopDayWeek = document.getElementById('checkboxTopChange');
+  checkboxTopDayWeek.addEventListener('change', changeTopDayWeek);
+  
+  showTopFilms()
+}
