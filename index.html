@@ -9,23 +9,23 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
     <nav class="navbar">
         <div class="container">
-            <button class="navbar-arrow btn btn-info d-none" id="navbar-arrow">←</button>
             <a href="index.html" class="navbar-brand">AVP-Kinopoisk</a>
         </div>
     </nav>
-    <div class="container jumbotron">
+    <div class="container jumbotron" id="searchDiv">
         <h3 class="text-center">Поиск фильмов, сериалов и актеров</h3>
 
-        <div class="input-group mb-3">
+        <div class="input-group mb-3" id="inputGroup">
             <div class="input-group-prepend">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">Уточнить поиск</button>
-                <div class="dropdown-menu">
+                    aria-haspopup="true" aria-expanded="false" id="buttonConfigSearch">Уточнить поиск</button>
+                <div class="menu__search d-none" id="menuSearch">
                     <label class="dropdown-item"><input type="checkbox" id="movieSearch"> Фильмы</label>
                     <label class="dropdown-item"><input type="checkbox" id="tvSearch"> Сериалы</label>
                     <label class="dropdown-item"><input type="checkbox" id="peopleSearch"> Актеров</label>
@@ -33,6 +33,7 @@
             </div>
             <input type="text" class="form-control" id='searchText' placeholder="Введите название...">
         </div>
+        <h1 class="col-12 text-center" id="infoText"></h1>
     </div>
     <div class="container filter" id="filter">
         <div id="checkTopWeekDay"></div>

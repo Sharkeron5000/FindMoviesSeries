@@ -1,25 +1,34 @@
 import { content } from "./js/domContent.js";
-import { addEventMedia} from "./js/events.js";
-import { getControlPanelInput } from "./js/functions.js";
+import { changeHash, filter, keyEnter } from "./js/events.js";
+import { configSearch, getControlPanelInput } from "./js/functions.js";
 import { timeStartSearch } from "./js/timeout.js";
 import { key } from "./key/apiKey.js";
 
 const searchForm = document.getElementById('searchText');
-const movie = document.getElementById('movies');
-const checkTopWeekDay = document.getElementById('checkTopWeekDay');
+const movieList = document.getElementById('movies');
 const apiKey = key;
+const buttonConfigSearch = document.getElementById('buttonConfigSearch');
+const textInfo = document.getElementById('infoText');
+const controlPanel = document.getElementById('checkTopWeekDay');
+
+/** Показать, спрятать фильтр поиска */
+buttonConfigSearch.addEventListener('click', filter)
 
 /** Запустить поиск фильма по введенным данным */
 searchForm.addEventListener('input', timeStartSearch);
+searchForm.addEventListener('keydown', keyEnter);
 
 /** Загрузка списка популярных фильмов, когда страница загрузилась полностью */
-document.addEventListener('DOMContentLoaded', getControlPanelInput);
+document.addEventListener('DOMContentLoaded', showTopFilms);
+
+/** Отслеживание изменения Hash в URL */
+window.onhashchange = changeHash;
 
 /** Загрузка списка популярных фильмов за неделю */
 export function showTopFilms() {
     let inner = '';
-    const getValueTop = JSON.parse(localStorage.getItem('topWatch'));
-    // console.log(typeof getValueTop);
+    getControlPanelInput();
+    const getValueTop = JSON.parse(localStorage.getItem('topWatch')) || 'day';
 
     fetch(`https://api.themoviedb.org/3/trending/all/${getValueTop}?api_key=${apiKey}&language=ru`)
         .then((value) => {
@@ -30,41 +39,40 @@ export function showTopFilms() {
         })
         .then((output) => {
             if (output.results.length === 0) {
-                movie.innerHTML = '<h2 class="col-12 text-center text-info">Ничего не найдено</h2>';
-                return;
+                return content.errorContent('', false, false, 'Ничего не найдено')
             }
 
             output.results.forEach((item) => {
-                console.log(item);
                 const nameItem = item.name || item.title;
-                let dataInfo = `data-id="${String(item.id).trim()}" data-type="${item.media_type}"`;
-
-                inner += content.videoContent(item, nameItem, dataInfo);
+                inner += content.videoPoster(item, nameItem);
             });
 
-            movie.innerHTML = inner;
-            addEventMedia();
+            movieList.innerHTML = inner;
 
         })
         .catch((reason) => {
-            content.errorContent(reason, movie);
+            content.errorContent(reason, true, false, 'Упс, что-то пошло не так');
         });
 }
 
 /** Показ список фильмов, через поисковик */
-export function apiSearch() {
-    const movieSearch = document.getElementById('movieSearch').checked;
-    const tvSearch = document.getElementById('tvSearch').checked;
-    const peopleSearch = document.getElementById('peopleSearch').checked;
-    let searchCheckList = [movieSearch, tvSearch, peopleSearch];
-
+export function search() {
+    const movie = document.getElementById('movieSearch').checked;
+    const tv = document.getElementById('tvSearch').checked;
+    const person = document.getElementById('peopleSearch').checked;
+    let searchCheckList = { movie, tv, person };
     const SearchText = document.querySelector('.form-control').value;
-    const server = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=ru&query=${SearchText}`;
-    movie.innerHTML = '<div class="spinner"></div>';
+
+    controlPanel.textContent = '';
+    textInfo.classList.remove('text-danger', 'text-info')
+    textInfo.textContent = '';
+    movieList.innerHTML = '<div class="spinner"></div>';
+    const type = configSearch(searchCheckList);
+    const server = `https://api.themoviedb.org/3/search/${type}?api_key=${apiKey}&language=ru&query=${SearchText}`
 
     if (SearchText.trim().length === 0) {
-        movie.innerHTML = '<h2 class="col-12 text-center text-danger">Поле поиска не должно быть пустым</h2>';
-        showTopFilms()
+        content.errorContent('', true, false, 'Поле поиска не должно быть пустым');
+        showTopFilms();
         return;
     }
 
@@ -79,74 +87,70 @@ export function apiSearch() {
             let inner = '';
 
             if (output.results.length === 0) {
-                movie.innerHTML = '<h2 class="col-12 text-center text-info">Ничего не найдено</h2>';
-                return;
+                return content.errorContent('', false, false, 'Ничего не найдено')
             }
 
             output.results.forEach((item) => {
-                const nameItem = item.name || item.title;
-                let dataInfo = '';
-
-                if (item.media_type !== 'person') {
-                    dataInfo = `data-id="${String(item.id).trim()}" data-type="${item.media_type}"`;
-                }
-
-                inner += content.videoContent(item, nameItem, dataInfo);
+                inner += content.videoPoster(item, type);
             });
 
-            movie.innerHTML = inner;
-            addEventMedia();
+            movieList.innerHTML = inner;
         })
         .catch((reason) => {
-            content.errorContent(reason, movie);
+            content.errorContent(reason, true, false, 'Упс, что-то пошло не так');
         });
 };
 
 /** Вывод полной информации о фильме */
-export function showFullInfo() {
-    movie.innerHTML = '<div class="spinner"></div>';
-    let url = '';
-    let showType = '';
-    if (this.dataset.type === 'movie') {
-        url = `https://api.themoviedb.org/3/movie/${this.dataset.id}?api_key=${apiKey}&language=ru`;
-        showType = 'фильма';
-    } else if (this.dataset.type === 'tv') {
-        url = `https://api.themoviedb.org/3/tv/${this.dataset.id}?api_key=${apiKey}&language=ru`;
-        showType = 'сериала';
-    } else {
-        movie.innerHTML = '<h2 class="col-12 text-center text-danger">Произошла ошибка</h2>';
-    }
+export function showFullVideoInfo(appendUrl, type) {
+    let url = `https://api.themoviedb.org/3/${appendUrl}?api_key=${apiKey}&language=ru`;
 
     fetch(url)
         .then((value) => {
             if (value.status !== 200) {
-                return Promise.reject(new Error(value.status));
+                throw new Error(value.status);
             }
             return value.json();
         })
         .then((output) => {
-            console.log(output);
-            // if(output.adult) checkAge();
-            const arrowBack = document.getElementById('navbar-arrow');
-            arrowBack.classList.remove('d-none')
-            arrowBack.addEventListener('click', () => {
-                document.location.reload();
-            });
-
-            movie.innerHTML = content.fullVideoContent(output, showType);
+            if (type === 'movie') {
+                movieList.innerHTML = content.fullMovieContent(output);
+            } else if (type === 'tv') {
+                movieList.innerHTML = content.fullTvContent(output)
+            };
             content.backgroundImage(output.backdrop_path);
 
-            getVideo(this.dataset.type, this.dataset.id);
+            getVideo(appendUrl);
         })
         .catch((reason) => {
-            content.errorContent(reason, movie);
+            content.errorContent(reason, true, false, 'Упс, что-то пошло не так');
+        });
+};
+
+/** Загрузить полную информацию о человеке */
+export function showFullPersonInfo(appendUrl) {
+    let url = `https://api.themoviedb.org/3/${appendUrl}?api_key=${apiKey}&language=ru`;
+
+    fetch(url)
+        .then((value) => {
+            if (value.status !== 200) {
+                throw new Error(value.status);
+            }
+            return value.json();
+        })
+        .then((output) => {
+            movieList.innerHTML = content.fullPersonContent(output);
+            content.backgroundImage();
+        })
+        .catch((reason) => {
+            content.errorContent(reason, true, false, 'Упс, что-то пошло не так');
         });
 };
 
 /** Вывод трейлера на страницу */
-function getVideo(type, id) {
-    let youtube = movie.querySelector('.youtube');
-    fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${apiKey}&language=ru`)
+function getVideo(appendUrl) {
+    let youtube = movieList.querySelector('.youtube');
+    fetch(`https://api.themoviedb.org/3/${appendUrl}/videos?api_key=${apiKey}&language=ru`)
         .then((value) => {
             if (value.status !== 200) {
                 throw new Error(value.status);
@@ -167,7 +171,7 @@ function getVideo(type, id) {
             youtube.innerHTML = videoFrame;
         })
         .catch((reason) => {
-            youtube.innerHTML = 'Ошибка загрузки видео';
-            console.error(reason || reason.status);
+            // youtube.innerHTML = 'Ошибка загрузки видео';
+            content.errorContent(reason, true, true, 'Ошибка загрузки видео')
         });
 };

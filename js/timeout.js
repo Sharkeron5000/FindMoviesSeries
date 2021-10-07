@@ -1,8 +1,11 @@
-import { apiSearch } from "../script.js";
+import { search } from "../script.js";
 
 let oldDate;
+const menuSearch = document.getElementById('menuSearch');
+const SearchText = document.querySelector('.form-control')
 
-export function timeStartSearch(event) {
+export function timeStartSearch() {
+  menuSearch.classList.add('d-none')
   oldDate = Date.now();
   setTimeout(timeEndSearch, 1000);
 }
@@ -10,6 +13,7 @@ export function timeStartSearch(event) {
 function timeEndSearch() {
   let newDate = Date.now();
   if(newDate >= (oldDate + 1000)) {
-    apiSearch()
+    // location.hash = `search?${SearchText.value}`
+    search();
   }
 }
